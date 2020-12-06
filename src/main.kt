@@ -1,7 +1,10 @@
 import java.awt.*
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStreamReader
 import java.io.PrintWriter
+import java.lang.Exception
+import java.lang.management.PlatformLoggingMXBean
 import java.net.ServerSocket
 import java.util.concurrent.Flow
 import javax.swing.*
@@ -36,7 +39,7 @@ class ListFrame(title: String) : JFrame() {
         setTitle(title)
 
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        setSize(600, 800)
+        setSize(1200, 800)
         setResizable(false)
         setLocationRelativeTo(null)
     }
@@ -55,11 +58,10 @@ private fun createAndShowGUI() {
     var btm8=JButton("第八桌")
     var buttomList=arrayOf(btm1,btm2,btm3,btm4,btm5,btm6,btm7,btm8)
     val gy = GridLayout(0 ,2,5,5)
-    val f=Font("hi",Font.PLAIN,24)
+    val f=Font("hi",Font.PLAIN,16)
     for (btm in buttomList)
     {
         btm.font=f
-        btm.isVisible=false
         frame.add(btm)
     }
     frame.layout=gy
@@ -74,37 +76,97 @@ private fun createAndShowGUI() {
     var L6=JLabel()
     var L7=JLabel()
     var L8=JLabel()
+    var btm21=JButton("第一桌")
+    var btm22=JButton("第二桌")
+    var btm23=JButton("第三桌")
+    var btm24=JButton("第四桌")
+    var btm25=JButton("第五桌")
+    var btm26=JButton("第六桌")
+    var btm27=JButton("第七桌")
+    var btm28=JButton("第八桌")
     var LabelList=arrayOf(L1,L2,L3,L4,L5,L6,L7,L8)
-    val gy2 = GridLayout(0 ,2,5,5)
+    var buttomList2=arrayOf(btm21,btm22,btm23,btm24,btm25,btm26,btm27,btm28)
+    val gy2 = GridLayout(4 ,4,0,0)
     for (lab in LabelList)
     {
         lab.setFont(f)
         frame2.add(lab)
     }
-
+    for (btm in buttomList2)
+    {
+        btm.font=f
+        frame2.add(btm)
+    }
     frame2.layout=gy2
     frame2.isVisible = true
     val Server=ServerSocket(5004)
-    print("Server Start!")
+    println("Server Start!")
     Thread{
         var table=1
         while(true)
         {
             val Client=Server.accept()
+            val input = Client?.getInputStream()
+            val reader = BufferedReader(InputStreamReader(input))
+            val ReallyClient:Boolean=reader.readLine().toBoolean()
             val btm=buttomList[table-1]
-            btm.isVisible=true
-            print("已連線")
             Thread{
-                val thisTable=table
-                val input = Client?.getInputStream()
-                val reader = BufferedReader(InputStreamReader(input))
-                val output=Client.getOutputStream()
-                var writer= PrintWriter(output,true)
-                writer.println(thisTable)
+                var tableNumber=table
+                val output = Client.getOutputStream()
+                var writer = PrintWriter(output, true)
+                writer.println(tableNumber)
                 btm.addActionListener {
-                    print("來自第${thisTable}桌的客人")
+                    print("正在為${tableNumber}桌的客人結帳")
                 }
-                table++
+                if(ReallyClient)
+                {
+                    table++
+                    print(table)
+                    buttomList2[tableNumber-1].addActionListener{
+                        print(tableNumber-1)
+                        var f=File("${tableNumber}.txt")
+                        var all = f.readText()
+                        var allList=all.split("<br>")
+                        f.writeText("")
+                        for(place in 2..allList.size-1)
+                        {
+                            f.appendText("<br>"+allList[place])
+                        }
+                        LabelList[tableNumber-1].text="<html>${f.readText()}</html>"
+                    }
+                    Thread.interrupted()
+                }
+                else
+                {
+                    tableNumber=reader.readLine().toInt()
+                }
+                var tar=""
+                while (true)
+                {
+                    var foodArr = arrayOf("", "", "", "")
+                    for (place in 0..3)
+                    {
+                        foodArr[place] = reader.readLine()
+                        if(foodArr[place]!="None")
+                        {
+                            var food = foodArr[place].split(":")
+                            var f=File("${tableNumber}.txt")
+                            var foodName=food[0]
+                            var foodCount=food[1]
+                            if(f.readText().split("<br>").size<9)
+                            {
+                                f.appendText("<br>第${tableNumber}桌"+foodName)
+                                f.appendText(foodCount+"</br>")
+                            }
+                            tar="<html>${f.readText()}</html>"
+                            println("第${tableNumber}桌號的訂單:${food[0]}${food[1]}個")
+                        }
+                    }
+                    LabelList[tableNumber-1].text=tar
+                }
+
+
+
             }.start()
 
         }
