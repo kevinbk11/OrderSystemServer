@@ -99,26 +99,25 @@ private fun createAndShowGUI() {
     }
     frame2.layout=gy2
     frame2.isVisible = true
+    var Cost=arrayOf(0,0,0,0,0,0,0,0)
     val Server=ServerSocket(5004)
     println("Server Start!")
     Thread{
         var table=1
-        var Cost=arrayOf(0,0,0,0,0,0,0,0)
         while(true)
         {
             val Client=Server.accept()
             val input = Client?.getInputStream()
             val reader = BufferedReader(InputStreamReader(input))
-            val ReallyClient:Boolean=reader.readLine().toBoolean()
+            val ReallyClient:Int=reader.readLine().toInt()
             Thread{
                 var tableNumber=table
                 val output = Client.getOutputStream()
                 var writer = PrintWriter(output, true)
                 writer.println(tableNumber)
-                if(ReallyClient)
+                if(ReallyClient==0)
                 {
                     table++
-                    print(table)
                     buttomList[table-2].addActionListener {
                         println("正在為${tableNumber}桌的客人結帳,一共是${Cost[tableNumber-1]}元")
                         writer.println(true)
@@ -134,23 +133,19 @@ private fun createAndShowGUI() {
                         }
                         LabelList[tableNumber-1].text="<html>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元${f.readText()}</html>"
                     }
-                    Thread.interrupted()
                 }
-                else
+                else if(ReallyClient==1)
                 {
                     tableNumber=reader.readLine().toInt()
-                }
-                var tar=""
-                while (true)
-                {
+                    var tar=""
                     var foodArr = arrayOf("", "", "", "")
+                    var full=false
                     for (place in 0..3)
                     {
                         foodArr[place] = reader.readLine()
                         if(foodArr[place]!="None")
                         {
                             var food = foodArr[place].split(":")
-                            print(food)
                             var f=File("${tableNumber}.txt")
                             var foodName=food[0]
                             var foodCount=food[1]
@@ -159,11 +154,15 @@ private fun createAndShowGUI() {
                                 f.appendText("<br>第${tableNumber}桌"+foodName)
                                 f.appendText(foodCount+"</br>")
                             }
+                            else
+                            {
+                                full=true
+                            }
                             tar="${f.readText()}</html>"
-                            println("第${tableNumber}桌號的訂單:${food[0]}${food[1]}個")
+                            //println("第${tableNumber}桌號的訂單:${food[0]}${food[1]}個")
                         }
                         var f=File("${tableNumber}.txt")
-                        if(f.readText().split("<br>").size<9)
+                        if(!full)
                         {
                             Cost[tableNumber-1]+=reader.readLine().toInt()
                         }
@@ -174,6 +173,13 @@ private fun createAndShowGUI() {
                     }
                     tar="<html><br>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元</br>"+tar
                     LabelList[tableNumber-1].text=tar
+
+                }
+                else if(ReallyClient==2)
+                {
+                    println("要求結帳")
+                    writer.println(Cost[tableNumber-2])
+
                 }
 
 
