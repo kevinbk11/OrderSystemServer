@@ -150,6 +150,7 @@ private fun createAndShowGUI() {
                         if(foodArr[place]!="None")
                         {
                             var food = foodArr[place].split(":")
+                            print(food)
                             var f=File("${tableNumber}.txt")
                             var foodName=food[0]
                             var foodCount=food[1]
@@ -161,8 +162,16 @@ private fun createAndShowGUI() {
                             tar="${f.readText()}</html>"
                             println("第${tableNumber}桌號的訂單:${food[0]}${food[1]}個")
                         }
+                        var f=File("${tableNumber}.txt")
+                        if(f.readText().split("<br>").size<9)
+                        {
+                            Cost[tableNumber-1]+=reader.readLine().toInt()
+                        }
+                        else
+                        {
+                            reader.readLine()
+                        }
                     }
-                    Cost[tableNumber-1]+=reader.readLine().toInt()
                     tar="<html><br>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元</br>"+tar
                     LabelList[tableNumber-1].text=tar
                 }
