@@ -103,27 +103,27 @@ private fun createAndShowGUI() {
     println("Server Start!")
     Thread{
         var table=1
+        var Cost=arrayOf(0,0,0,0,0,0,0,0)
         while(true)
         {
             val Client=Server.accept()
             val input = Client?.getInputStream()
             val reader = BufferedReader(InputStreamReader(input))
             val ReallyClient:Boolean=reader.readLine().toBoolean()
-            val btm=buttomList[table-1]
             Thread{
                 var tableNumber=table
                 val output = Client.getOutputStream()
                 var writer = PrintWriter(output, true)
                 writer.println(tableNumber)
-                btm.addActionListener {
-                    print("正在為${tableNumber}桌的客人結帳")
-                }
                 if(ReallyClient)
                 {
                     table++
                     print(table)
+                    buttomList[table-2].addActionListener {
+                        println("正在為${tableNumber}桌的客人結帳,一共是${Cost[tableNumber-1]}元")
+                        writer.println(true)
+                    }
                     buttomList2[tableNumber-1].addActionListener{
-                        print(tableNumber-1)
                         var f=File("${tableNumber}.txt")
                         var all = f.readText()
                         var allList=all.split("<br>")
@@ -132,7 +132,7 @@ private fun createAndShowGUI() {
                         {
                             f.appendText("<br>"+allList[place])
                         }
-                        LabelList[tableNumber-1].text="<html>${f.readText()}</html>"
+                        LabelList[tableNumber-1].text="<html>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元${f.readText()}</html>"
                     }
                     Thread.interrupted()
                 }
@@ -158,10 +158,12 @@ private fun createAndShowGUI() {
                                 f.appendText("<br>第${tableNumber}桌"+foodName)
                                 f.appendText(foodCount+"</br>")
                             }
-                            tar="<html>${f.readText()}</html>"
+                            tar="${f.readText()}</html>"
                             println("第${tableNumber}桌號的訂單:${food[0]}${food[1]}個")
                         }
                     }
+                    Cost[tableNumber-1]+=reader.readLine().toInt()
+                    tar="<html><br>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元</br>"+tar
                     LabelList[tableNumber-1].text=tar
                 }
 
