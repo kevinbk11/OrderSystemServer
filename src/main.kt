@@ -104,9 +104,35 @@ private fun createAndShowGUI() {
     val Server=ServerSocket(5004)
     val sendMessageServer= ServerSocket(5006)
     val TotalServer=ServerSocket(5008)
+    val sendListServer=ServerSocket(5010)
     println("Server Start!")
     Thread{
         var table=1
+        Thread{
+            while(true)
+            {
+                val Client = sendListServer.accept()
+                print("request")
+                Thread {
+                    val output = Client.getOutputStream()
+                    val writer = PrintWriter(output, true)
+                    val input = Client.getInputStream()
+                    val reader = BufferedReader(InputStreamReader(input))
+                    val table = reader.readLine()
+                    val f = File("${table}.txt")
+                    val all = f.readText()
+                    val allSplit = all.split("</br>")
+                    print(allSplit)
+                    writer.println(allSplit.size - 1)
+                    for (text in allSplit) {
+                        writer.println(text + "<br>")
+                    }
+                    writer.println(Cost[table.toInt()-1])
+                }.start()
+            }
+        }.start()
+
+
         Thread{
             while(true)
             {
