@@ -208,8 +208,7 @@ private fun createAndShowGUI() {
                             var foodCount=food[1]
                             if(f.readText().split("<br>").size<9)
                             {
-                                f.appendText("<br>第${tableNumber}桌"+foodName)
-                                f.appendText(foodCount+"</br>")
+                                f.appendText("<br>第${tableNumber}桌${foodName}:${foodCount}</br>")
                             }
                             else
                             {
