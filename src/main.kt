@@ -112,20 +112,19 @@ private fun createAndShowGUI() {
             while(true)
             {
                 val Client = sendListServer.accept()
-                print("request")
                 Thread {
                     val output = Client.getOutputStream()
                     val writer = PrintWriter(output, true)
                     val input = Client.getInputStream()
                     val reader = BufferedReader(InputStreamReader(input))
                     val table = reader.readLine()
-                    val f = File("${table}.txt")
+                    val f = File("history${table}.txt")
                     val all = f.readText()
-                    val allSplit = all.split("</br>")
-                    print(allSplit)
+                    val allSplit = all.split("/")
                     writer.println(allSplit.size - 1)
                     for (text in allSplit) {
-                        writer.println(text + "<br>")
+                        print(text)
+                        writer.println(text)
                     }
                     writer.println(Cost[table.toInt()-1])
                 }.start()
@@ -151,12 +150,45 @@ private fun createAndShowGUI() {
                             var all = f.readText()
                             var allList=all.split("<br>")
                             f.writeText("")
+                            var h=File("history${tableNumber}.txt")
+                            var allHistory=h.readText().split("/")
+                            var newHistory= arrayListOf<String>()
                             for(place in 2..allList.size-1)
                             {
                                 f.appendText("<br>"+allList[place])
                             }
+                            var delete:Boolean=false
+                            for(place in 0..allHistory.size-2)
+                            {
+                                var allHistoryText=(allHistory[place].split(":"))
+                                if(allHistoryText[2]=="N" && !delete)
+                                {
+                                    var newString=allHistory[place]
+                                    newString=newString.replace("N","Y/")
+                                    println(newString)
+                                    newHistory.add(newString)
+                                    delete=true
+                                }
+                                else
+                                {
+                                    println(allHistory[place])
+                                    newHistory.add(allHistory[place]+"/")
+                                }
+                                h.writeText("")
+                                for(text in newHistory)
+                                {
+                                    h.appendText(text)
+                                }
+                            }
                             LabelList[tableNumber-1].text="<html>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元${f.readText()}</html>"
                             writer.println("test")
+                            writer.println(newHistory.size-1)
+                            for(x in newHistory)
+                            {
+                                print("????")
+                                println(x)
+                                writer.println(x)
+                            }
                         }
                         ButtonFun[tableNumber-1]=true
                     }
@@ -195,6 +227,7 @@ private fun createAndShowGUI() {
                 {
                     tableNumber=reader.readLine().toInt()
                     var f=File("${tableNumber}.txt")
+                    var h=File("history${tableNumber}.txt")
                     var tar=""
                     var foodArr = arrayOf("", "", "", "")
                     var full=false
@@ -209,6 +242,7 @@ private fun createAndShowGUI() {
                             if(f.readText().split("<br>").size<9)
                             {
                                 f.appendText("<br>第${tableNumber}桌${foodName}:${foodCount}</br>")
+                                h.appendText("${foodName}:${foodCount}:N/")
                             }
                             else
                             {
@@ -234,6 +268,8 @@ private fun createAndShowGUI() {
                 {
                     println("要求結帳")
                     writer.println(Cost[tableNumber-2])
+                    var f=File("history${tableNumber-1}.txt")
+                    f.writeText("")
                 }
 
             }.start()
