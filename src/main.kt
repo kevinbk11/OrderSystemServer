@@ -1,4 +1,5 @@
 
+import Frame.ListForm
 import java.awt.Color
 import java.awt.FlowLayout
 import javax.swing.*
@@ -6,7 +7,7 @@ import javax.swing.*
 
 fun main(args: Array<String>) {
 
-    //框架
+    /*//框架
     val jFrame = JFrame("點餐紀錄")
     jFrame.setSize(500, 500) //設定視窗大小
     //setLocation //設定顯示位置
@@ -38,5 +39,11 @@ fun main(args: Array<String>) {
     pane.add(radiobutton)
 
 
-    jFrame.isVisible = true //顯示視窗
+    jFrame.isVisible = true //顯示視窗*/
+    val ListFrame=JFrame("待出餐清單")
+    val ListForm=ListForm()
+    ListFrame.contentPane=ListForm.panel1
+    ListFrame.isVisible=true
+    ListFrame.isResizable=false
+    ListFrame.setSize(200,500)
 }
