@@ -1,32 +1,11 @@
+
 import java.awt.*
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 import java.io.PrintWriter
-import java.lang.Exception
-import java.lang.management.PlatformLoggingMXBean
 import java.net.ServerSocket
-import java.util.concurrent.Flow
 import javax.swing.*
-import kotlin.reflect.jvm.internal.impl.util.Check
-
-
-class CheckFrame(title: String) : JFrame() {
-
-    init {
-        createUI(title)
-    }
-
-    private fun createUI(title: String) {
-
-        setTitle(title)
-
-        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        setSize(600, 800)
-        setResizable(false)
-        setLocationRelativeTo(null)
-    }
-}
 
 class ListFrame(title: String) : JFrame() {
 
@@ -39,14 +18,47 @@ class ListFrame(title: String) : JFrame() {
         setTitle(title)
 
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        setSize(1200, 800)
+        setSize(400, 700)
+        setResizable(false)
+        setLocationRelativeTo(null)
+    }
+}
+
+class CheckFrame(title: String) : JFrame() {
+
+    init {
+        createUI(title)
+    }
+
+    private fun createUI(title: String) {
+
+        setTitle(title)
+
+        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        setSize(400, 700)
+        setResizable(false)
+        setLocationRelativeTo(null)
+    }
+}
+
+class HistoryFrame(title: String) : JFrame() {
+
+    init {
+        createUI(title)
+    }
+
+    private fun createUI(title: String) {
+
+        setTitle(title)
+
+        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        setSize(1920-400, 700)
         setResizable(false)
         setLocationRelativeTo(null)
     }
 }
 
 private fun createAndShowGUI() {
-
     val frame = CheckFrame("結帳和退桌")
     var btm1=JButton("第一桌")
     var btm2=JButton("第二桌")
@@ -67,15 +79,15 @@ private fun createAndShowGUI() {
     frame.layout=gy
     frame.isVisible = true
 
-    val frame2 = ListFrame("待送清單")
-    var L1=JLabel()
-    var L2=JLabel()
-    var L3=JLabel()
-    var L4=JLabel()
-    var L5=JLabel()
-    var L6=JLabel()
-    var L7=JLabel()
-    var L8=JLabel()
+    val frame2 = HistoryFrame("歷史紀錄")
+    var L1=JTextArea()
+    var L2=JTextArea()
+    var L3=JTextArea()
+    var L4=JTextArea()
+    var L5=JTextArea()
+    var L6=JTextArea()
+    var L7=JTextArea()
+    var L8=JTextArea()
     var btm21=JButton("第一桌")
     var btm22=JButton("第二桌")
     var btm23=JButton("第三桌")
@@ -86,19 +98,22 @@ private fun createAndShowGUI() {
     var btm28=JButton("第八桌")
     var LabelList=arrayOf(L1,L2,L3,L4,L5,L6,L7,L8)
     var buttomList2=arrayOf(btm21,btm22,btm23,btm24,btm25,btm26,btm27,btm28)
-    val gy2 = GridLayout(4 ,4,0,0)
+    val gy2 = GridLayout(2,  8,0,-1)
+    val f2=Font("hi2",Font.PLAIN,16)
     for (lab in LabelList)
     {
-        lab.setFont(f)
+        lab.setFont(f2)
+        lab.isEditable=false
         frame2.add(lab)
     }
-    for (btm in buttomList2)
+    /*for (btm in buttomList2)
     {
         btm.font=f
         frame2.add(btm)
-    }
+    }*/
     frame2.layout=gy2
     frame2.isVisible = true
+
     var Cost=arrayOf(0,0,0,0,0,0,0,0)
     var ButtonFun=arrayOf(false,false,false,false,false,false,false,false)
     val Server=ServerSocket(5004)
@@ -148,14 +163,16 @@ private fun createAndShowGUI() {
                         buttomList2[tableNumber-1].addActionListener{
                             var f=File("${tableNumber}.txt")
                             var all = f.readText()
-                            var allList=all.split("<br>")
+                            println(all)
+                            var allList=all.split("\n")
+                            println(allList)
                             f.writeText("")
                             var h=File("history${tableNumber}.txt")
                             var allHistory=h.readText().split("/")
                             var newHistory= arrayListOf<String>()
-                            for(place in 2..allList.size-1)
+                            for(place in 1..allList.size-2)
                             {
-                                f.appendText("<br>"+allList[place])
+                                f.appendText(allList[place]+"\n")
                             }
                             var delete:Boolean=false
                             for(place in 0..allHistory.size-2)
@@ -180,7 +197,18 @@ private fun createAndShowGUI() {
                                     h.appendText(text)
                                 }
                             }
-                            LabelList[tableNumber-1].text="<html>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元${f.readText()}</html>"
+                            var WordOriginList=h.readText()
+                            var reg = ":[N|Y]/".toRegex()
+                            var WordList=WordOriginList.split(reg)
+                            println(WordList)
+                            LabelList[tableNumber-1].text="第${tableNumber}桌目前消費${Cost[tableNumber-1]}元"
+                            for (word in WordList)
+                            {
+                                if(!(word.length<2))
+                                {
+                                    LabelList[tableNumber-1].text="${LabelList[tableNumber-1].text}"+"\n第${tableNumber}桌${word}"
+                                }
+                            }
                             writer.println("test")
                             writer.println(newHistory.size-1)
                             for(x in newHistory)
@@ -239,9 +267,9 @@ private fun createAndShowGUI() {
                             var food = foodArr[place].split(":")
                             var foodName=food[0]
                             var foodCount=food[1]
-                            if(f.readText().split("<br>").size<9)
+                            if(f.readText().split("\n").size<9)
                             {
-                                f.appendText("<br>第${tableNumber}桌${foodName}:${foodCount}</br>")
+                                f.appendText("第${tableNumber}桌${foodName}:${foodCount}\n")
                                 h.appendText("${foodName}:${foodCount}:N/")
                             }
                             else
@@ -256,11 +284,21 @@ private fun createAndShowGUI() {
                         }
                         else
                         {
-                            reader.readLine()
+                             reader.readLine()
                         }
                     }
-                    tar="${f.readText()}</html>"
-                    tar="<html><br>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元</br>"+tar
+                    var WordOriginList=h.readText()
+                    var reg = ":[N|Y]/".toRegex()
+                    var WordList=WordOriginList.split(reg)
+                    tar="第${tableNumber}桌目前消費${Cost[tableNumber-1]}元"
+                    for(word in WordList)
+                    {
+                        if(!(word.length<2))
+                        {
+                            tar=tar+"\n第${tableNumber}桌${word}"
+                        }
+                    }
+
                     LabelList[tableNumber-1].text=tar
 
                 }
