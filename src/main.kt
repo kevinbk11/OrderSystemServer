@@ -6,24 +6,7 @@ import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.ServerSocket
 import javax.swing.*
-
-class ListFrame(title: String) : JFrame() {
-
-    init {
-        createUI(title)
-    }
-
-    private fun createUI(title: String) {
-
-        setTitle(title)
-
-        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        setSize(400, 700)
-        setResizable(false)
-        setLocationRelativeTo(null)
-    }
-}
-
+import Frame.ListForm
 class CheckFrame(title: String) : JFrame() {
 
     init {
@@ -59,6 +42,86 @@ class HistoryFrame(title: String) : JFrame() {
 }
 
 private fun createAndShowGUI() {
+    var Cost=arrayOf(0,0,0,0,0,0,0,0)
+    val ListFrame=JFrame("待出餐清單")
+    val ListForm=ListForm()
+    var waitList=ListForm.FoodList
+
+    /*ListForm.OutfdBtn.addActionListener{
+        var CheckBoxState=arrayOf(ListForm.CheckBox1.isSelected,ListForm.CheckBox2.isSelected,ListForm.CheckBox3.isSelected,ListForm.CheckBox4.isSelected,ListForm.CheckBox5.isSelected)
+        var nowTable=1
+        for(isSelected in CheckBoxState)
+        {
+            var w=waitList
+            var waitFood=w.text.split(":")
+            if(isSelected)
+            {
+                var tableNumber=waitFood[nowTable-1].substring(1,2).toInt()
+                var f=File("${tableNumber}.txt")
+                var all = f.readText()
+                println(all)
+                var allList=all.split("\n")
+                println(allList)
+                f.writeText("")
+                var h=File("history${tableNumber}.txt")
+                var allHistory=h.readText().split("/")
+                var newHistory= arrayListOf<String>()
+                for(place in 1..allList.size-2)
+                {
+                    f.appendText(allList[place]+"\n")
+                }
+                var delete:Boolean=false
+                for(place in 0..allHistory.size-2)
+                {
+                    var allHistoryText=(allHistory[place].split(":"))
+                    if(allHistoryText[2]=="N" && !delete)
+                    {
+                        var newString=allHistory[place]
+                        newString=newString.replace("N","Y/")
+                        println(newString)
+                        newHistory.add(newString)
+                        delete=true
+                    }
+                    else
+                    {
+                        println(allHistory[place])
+                        newHistory.add(allHistory[place]+"/")
+                    }
+                    h.writeText("")
+                    for(text in newHistory)
+                    {
+                        h.appendText(text)
+                    }
+                }
+                var WordOriginList=h.readText()
+                var reg = ":[N|Y]/".toRegex()
+                var WordList=WordOriginList.split(reg)
+                println(WordList)
+                waitList.text="第${tableNumber}桌目前消費${Cost[tableNumber-1]}元"
+                for (word in WordList)
+                {
+                    if(!(word.length<2))
+                    {
+                        waitList.text=waitList.text+"\n第${tableNumber}桌${word}"
+                    }
+                }
+                writer.println("test")
+                writer.println(newHistory.size-1)
+                for(x in newHistory)
+                {
+                    print("????")
+                    println(x)
+                    writer.println(x)
+                }
+            }
+        }
+        nowTable+=1
+    }*/
+    var CheckBoxArray=arrayOf(ListForm.CheckBox1,ListForm.CheckBox2,ListForm.CheckBox3,ListForm.CheckBox4,ListForm.CheckBox5)
+    ListFrame.contentPane=ListForm.panel1
+    ListFrame.isVisible=true
+    ListFrame.isResizable=false
+    ListFrame.setSize(800,750)
     val frame = CheckFrame("結帳和退桌")
     var btm1=JButton("第一桌")
     var btm2=JButton("第二桌")
@@ -113,8 +176,6 @@ private fun createAndShowGUI() {
     }*/
     frame2.layout=gy2
     frame2.isVisible = true
-
-    var Cost=arrayOf(0,0,0,0,0,0,0,0)
     var ButtonFun=arrayOf(false,false,false,false,false,false,false,false)
     val Server=ServerSocket(5004)
     val sendMessageServer= ServerSocket(5006)
@@ -163,16 +224,14 @@ private fun createAndShowGUI() {
                         buttomList2[tableNumber-1].addActionListener{
                             var f=File("${tableNumber}.txt")
                             var all = f.readText()
-                            println(all)
-                            var allList=all.split("\n")
-                            println(allList)
+                            var allList=all.split("<br>")
                             f.writeText("")
                             var h=File("history${tableNumber}.txt")
                             var allHistory=h.readText().split("/")
                             var newHistory= arrayListOf<String>()
-                            for(place in 1..allList.size-2)
+                            for(place in 2..allList.size-1)
                             {
-                                f.appendText(allList[place]+"\n")
+                                f.appendText("<br>"+allList[place])
                             }
                             var delete:Boolean=false
                             for(place in 0..allHistory.size-2)
@@ -197,18 +256,7 @@ private fun createAndShowGUI() {
                                     h.appendText(text)
                                 }
                             }
-                            var WordOriginList=h.readText()
-                            var reg = ":[N|Y]/".toRegex()
-                            var WordList=WordOriginList.split(reg)
-                            println(WordList)
-                            LabelList[tableNumber-1].text="第${tableNumber}桌目前消費${Cost[tableNumber-1]}元"
-                            for (word in WordList)
-                            {
-                                if(!(word.length<2))
-                                {
-                                    LabelList[tableNumber-1].text="${LabelList[tableNumber-1].text}"+"\n第${tableNumber}桌${word}"
-                                }
-                            }
+                            LabelList[tableNumber-1].text="<html>第${tableNumber}桌目前消費${Cost[tableNumber-1]}元${f.readText()}</html>"
                             writer.println("test")
                             writer.println(newHistory.size-1)
                             for(x in newHistory)
@@ -256,6 +304,7 @@ private fun createAndShowGUI() {
                     tableNumber=reader.readLine().toInt()
                     var f=File("${tableNumber}.txt")
                     var h=File("history${tableNumber}.txt")
+                    var w=File("wait.txt")
                     var tar=""
                     var foodArr = arrayOf("", "", "", "")
                     var full=false
@@ -270,7 +319,9 @@ private fun createAndShowGUI() {
                             if(f.readText().split("\n").size<9)
                             {
                                 f.appendText("第${tableNumber}桌${foodName}:${foodCount}\n")
+                                waitList.text=waitList.text+"第${tableNumber}桌${foodName}:${foodCount}\n"
                                 h.appendText("${foodName}:${foodCount}:N/")
+                                w.appendText("第${tableNumber}桌${foodName}:${foodCount}\n")
                             }
                             else
                             {
@@ -298,9 +349,7 @@ private fun createAndShowGUI() {
                             tar=tar+"\n第${tableNumber}桌${word}"
                         }
                     }
-
                     LabelList[tableNumber-1].text=tar
-
                 }
                 else if(ReallyClient==2)
                 {
