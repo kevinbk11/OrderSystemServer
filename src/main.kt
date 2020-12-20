@@ -1,25 +1,17 @@
-<<<<<<< HEAD
-
 import Frame.ListForm
-import java.awt.Color
-import java.awt.FlowLayout
-=======
 import java.awt.*
->>>>>>> c1b63486532bc83cf8fbd874d723c15053e2103c
 import javax.swing.*
 
 
 fun main(args: Array<String>) {
-<<<<<<< HEAD
-
     /*//框架
     val jFrame = JFrame("點餐紀錄")
     jFrame.setSize(500, 500) //設定視窗大小
-=======
+
     //框架
     val jFrame = JFrame("待送清單")
     jFrame.setSize(500, 700)//設定視窗大小
->>>>>>> c1b63486532bc83cf8fbd874d723c15053e2103c
+
     //setLocation //設定顯示位置
     //setBounds //設定顯示位置和視窗大小
     jFrame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
@@ -67,7 +59,5 @@ fun main(args: Array<String>) {
     ListFrame.isVisible=true
     ListFrame.isResizable=false
     ListFrame.setSize(200,500)
-=======
-    jFrame.isVisible = true
->>>>>>> c1b63486532bc83cf8fbd874d723c15053e2103c
+
 }
