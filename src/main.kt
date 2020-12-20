@@ -48,7 +48,14 @@ class ListFrame(title: String) : JFrame() {
 private fun createAndShowGUI() {
 
     val frame = CheckFrame("結帳和退桌")
-
+    var btm1=JButton("第一桌")
+    var btm2=JButton("第二桌")
+    var btm3=JButton("第三桌")
+    var btm4=JButton("第四桌")
+    var btm5=JButton("第五桌")
+    var btm6=JButton("第六桌")
+    var btm7=JButton("第七桌")
+    var btm8=JButton("第八桌")
     var buttomList=arrayOf(btm1,btm2,btm3,btm4,btm5,btm6,btm7,btm8)
     val gy = GridLayout(0 ,2,5,5)
     val f=Font("hi",Font.PLAIN,16)
