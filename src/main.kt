@@ -7,6 +7,8 @@ import java.io.PrintWriter
 import java.net.ServerSocket
 import javax.swing.*
 import Frame.ListForm
+import java.lang.Exception
+
 class CheckFrame(title: String) : JFrame() {
 
     init {
@@ -47,45 +49,65 @@ private fun createAndShowGUI() {
     val ListForm=ListForm()
     var waitList=ListForm.FoodList
 
-    /*ListForm.OutfdBtn.addActionListener{
+    ListForm.OutfdBtn.addActionListener{
         var CheckBoxState=arrayOf(ListForm.CheckBox1.isSelected,ListForm.CheckBox2.isSelected,ListForm.CheckBox3.isSelected,ListForm.CheckBox4.isSelected,ListForm.CheckBox5.isSelected)
         var nowTable=1
+        var deleteTimes=0
         for(isSelected in CheckBoxState)
         {
             var w=waitList
-            var waitFood=w.text.split(":")
+            var waitFood=w.text.split("\n")
             if(isSelected)
             {
-                var tableNumber=waitFood[nowTable-1].substring(1,2).toInt()
+                println()
+                println(waitFood)
+                //println(waitFood[nowTable-1])
+                var tableNumber=waitFood[nowTable-1-deleteTimes].substring(1,2).toInt()
                 var f=File("${tableNumber}.txt")
                 var all = f.readText()
-                println(all)
+                //println(all)
                 var allList=all.split("\n")
-                println(allList)
+                //println(allList)
                 f.writeText("")
                 var h=File("history${tableNumber}.txt")
                 var allHistory=h.readText().split("/")
                 var newHistory= arrayListOf<String>()
-                for(place in 1..allList.size-2)
+                var deletedFood=""
+                for(place in 0..allList.size-2)
                 {
-                    f.appendText(allList[place]+"\n")
-                }
-                var delete:Boolean=false
-                for(place in 0..allHistory.size-2)
-                {
-                    var allHistoryText=(allHistory[place].split(":"))
-                    if(allHistoryText[2]=="N" && !delete)
+                    if(allList[place]!=waitFood[nowTable-1-deleteTimes])
                     {
-                        var newString=allHistory[place]
-                        newString=newString.replace("N","Y/")
-                        println(newString)
-                        newHistory.add(newString)
-                        delete=true
+                        f.appendText(allList[place]+"\n")
                     }
                     else
                     {
-                        println(allHistory[place])
-                        newHistory.add(allHistory[place]+"/")
+                        deletedFood=allList[place]
+                    }
+                }
+                var delete:Boolean=false
+                var FoodStringList=deletedFood.split("第[0-9]桌".toRegex())
+                for(place in 0..allHistory.size-2)
+                {
+
+                    var allHistoryText=(allHistory[place].split(":"))
+                    try{
+                        if(FoodStringList[1]==allHistoryText[0]+":"+allHistoryText[1]&&(allHistoryText[2]=="N" && !delete))
+                        {
+                            var newString=allHistory[place]
+                            newString=newString.replace("N","Y/")
+                            //println(newString)
+                            newHistory.add(newString)
+                            delete=true
+                        }
+                        else
+                        {
+                            //println(allHistory[place])
+                            newHistory.add(allHistory[place]+"/")
+                        }
+                    }
+                    catch(e:Exception)
+                    {
+
                     }
                     h.writeText("")
                     for(text in newHistory)
@@ -93,30 +115,43 @@ private fun createAndShowGUI() {
                         h.appendText(text)
                     }
                 }
+                var waitFile=File("wait.txt")
+                var allWait=waitFile.readText().split("\n")
                 var WordOriginList=h.readText()
                 var reg = ":[N|Y]/".toRegex()
                 var WordList=WordOriginList.split(reg)
-                println(WordList)
-                waitList.text="第${tableNumber}桌目前消費${Cost[tableNumber-1]}元"
-                for (word in WordList)
+                //println(WordList)
+                waitList.text=""
+                waitFile.writeText("")
+                for (word in allWait)
                 {
-                    if(!(word.length<2))
+                    try{
+                        println(FoodStringList)
+                        println("HI"+word+":"+FoodStringList[1])
+                        if(word.split("第[0-9]桌".toRegex())[1]!=FoodStringList[1])
+                        {
+                            waitList.text=waitList.text+"${word}\n"
+                            waitFile.appendText(word+"\n")
+                        }
+                    }
+                    catch (e:Exception)
                     {
-                        waitList.text=waitList.text+"\n第${tableNumber}桌${word}"
+                        print("X")
                     }
                 }
-                writer.println("test")
+                /*writer.println("test")
                 writer.println(newHistory.size-1)
                 for(x in newHistory)
                 {
                     print("????")
                     println(x)
                     writer.println(x)
-                }
+                }*/
+                deleteTimes+=1
             }
+            nowTable+=1
         }
-        nowTable+=1
-    }*/
+    }
     var CheckBoxArray=arrayOf(ListForm.CheckBox1,ListForm.CheckBox2,ListForm.CheckBox3,ListForm.CheckBox4,ListForm.CheckBox5)
     ListFrame.contentPane=ListForm.panel1
     ListFrame.isVisible=true
