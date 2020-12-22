@@ -310,28 +310,36 @@ private fun createAndShowGUI() {
         while(true)
         {
             val Client=Server.accept()
+            var tableNumber=table
             val input = Client?.getInputStream()
             val reader = BufferedReader(InputStreamReader(input))
             val ReallyClient:Int=reader.readLine().toInt()
             print(ReallyClient)
             Thread{
-                var tableNumber=table
                 val output = Client.getOutputStream()
                 var writer = PrintWriter(output, true)
                 writer.println(tableNumber)
                 if(ReallyClient==0)
                 {
                     table++
-                    buttomList[table-2].addActionListener {
+                    val thisTable=table
+                    buttomList[thisTable-2].addActionListener {
                         println("正在為${tableNumber}桌的客人結帳,一共是${Cost[tableNumber-1]}元")
                         LabelList[tableNumber-1].text=""
                         Cost[tableNumber-1]=0
                         val F=File(tableNumber.toString()+".txt")
                         F.writeText("")
                         var C=TotalServer.accept()
+                        val i=C.getInputStream()
                         val o = C.getOutputStream()
+                        val r=BufferedReader(InputStreamReader(i))
                         val w = PrintWriter(o,true)
-                        w.println(true)
+                        println(thisTable)
+                        w.println(thisTable-1)
+                        while(r.readLine().toBoolean())
+                        {
+                            w.println(thisTable-1)
+                        }
                     }
                 }
                 else if(ReallyClient==1)
@@ -389,8 +397,37 @@ private fun createAndShowGUI() {
                 else if(ReallyClient==2)
                 {
                     println("要求結帳")
-                    writer.println(Cost[tableNumber-2])
-                    var f=File("history${tableNumber-1}.txt")
+                    val TotalTableNumber=reader.readLine().toInt()
+                    println("${Cost[TotalTableNumber-1]}")
+                    var money=Cost[TotalTableNumber-1]
+                    var Message=" "
+                    when(money)
+                    {
+                        in 0..999->
+                        {
+                            Message="N"
+                        }
+                        in 1000..2999->
+                        {
+                            money=(money*0.9).toInt()
+                            Message="已達九折消費門檻"
+                        }
+                        in 3000..4999->
+                        {
+                            money=(money*0.8).toInt()
+                            Message="已達八折消費門檻"
+                        }
+                        else->
+                        {
+                            money=(money*0.5).toInt()
+                            Message="已達五折消費門檻"
+                        }
+                    }
+
+                    println(Message)
+                    writer.println(Cost[TotalTableNumber-1])
+                    writer.println(Message)
+                    var f=File("history${TotalTableNumber}.txt")
                     f.writeText("")
                 }
 
