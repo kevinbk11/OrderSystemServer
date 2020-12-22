@@ -425,7 +425,7 @@ private fun createAndShowGUI() {
                     }
 
                     println(Message)
-                    writer.println(Cost[TotalTableNumber-1])
+                    writer.println(money)
                     writer.println(Message)
                     var f=File("history${TotalTableNumber}.txt")
                     f.writeText("")
