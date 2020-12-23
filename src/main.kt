@@ -48,7 +48,7 @@ private fun createAndShowGUI() {
     val ListFrame=JFrame("待出餐清單")
     val ListForm=ListForm()
     var waitList=ListForm.FoodList
-
+    var arrive:ServerSocket?=ServerSocket(5020)
     ListForm.OutfdBtn.addActionListener{
         var CheckBoxState=arrayOf(ListForm.CheckBox1.isSelected,ListForm.CheckBox2.isSelected,ListForm.CheckBox3.isSelected,ListForm.CheckBox4.isSelected,ListForm.CheckBox5.isSelected)
         var nowTable=1
@@ -61,8 +61,9 @@ private fun createAndShowGUI() {
             {
                 println()
                 println(waitFood)
-                //println(waitFood[nowTable-1])
+                println(waitFood[nowTable-1-deleteTimes])
                 var tableNumber=waitFood[nowTable-1-deleteTimes].substring(1,2).toInt()
+                println("${nowTable},${deleteTimes}")
                 var f=File("${tableNumber}.txt")
                 var all = f.readText()
                 //println(all)
@@ -82,6 +83,7 @@ private fun createAndShowGUI() {
                     else
                     {
                         deletedFood=allList[place]
+                        break
                     }
                 }
                 var delete:Boolean=false
@@ -91,7 +93,7 @@ private fun createAndShowGUI() {
 
                     var allHistoryText=(allHistory[place].split(":"))
                     try{
-                        if(FoodStringList[1]==allHistoryText[0]+":"+allHistoryText[1]&&(allHistoryText[2]=="N" && !delete))
+                        if(( FoodStringList[1]==allHistoryText[0]+":"+allHistoryText[1]&&(allHistoryText[2]=="N")) && !delete)
                         {
                             var newString=allHistory[place]
                             newString=newString.replace("N","Y/")
@@ -139,6 +141,27 @@ private fun createAndShowGUI() {
                         print("X")
                     }
                 }
+                println("HIHI")
+                var ThisClient=arrive!!.accept()
+                println("CONNECT!!")
+                val input = ThisClient!!.getInputStream()
+                val reader = BufferedReader(InputStreamReader(input))
+                val output = ThisClient.getOutputStream()
+                var writer = PrintWriter(output, true)
+                var trg=reader.readLine().toInt()
+                print(trg)
+                while(trg!=tableNumber)
+                {
+                    ThisClient=arrive!!.accept()
+                    val input = ThisClient!!.getInputStream()
+                    val reader = BufferedReader(InputStreamReader(input))
+                    val output = ThisClient.getOutputStream()
+                    var writer = PrintWriter(output, true)
+                    trg=reader.readLine().toInt()
+                    writer.println(false)
+                }
+
+                writer.println(true)
                 /*writer.println("test")
                 writer.println(newHistory.size-1)
                 for(x in newHistory)
@@ -319,7 +342,7 @@ private fun createAndShowGUI() {
                 val output = Client.getOutputStream()
                 var writer = PrintWriter(output, true)
                 writer.println(tableNumber)
-                if(ReallyClient==0)
+                if(ReallyClient==0)//桌子剛連線
                 {
                     table++
                     val thisTable=table
@@ -342,7 +365,7 @@ private fun createAndShowGUI() {
                         }
                     }
                 }
-                else if(ReallyClient==1)
+                else if(ReallyClient==1)//送餐
                 {
                     tableNumber=reader.readLine().toInt()
                     var f=File("${tableNumber}.txt")
