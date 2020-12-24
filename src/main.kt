@@ -8,6 +8,7 @@ import java.net.ServerSocket
 import javax.swing.*
 import Frame.ListForm
 import java.lang.Exception
+import kotlin.concurrent.thread
 
 class CheckFrame(title: String) : JFrame() {
 
@@ -74,16 +75,17 @@ private fun createAndShowGUI() {
                 var allHistory=h.readText().split("/")
                 var newHistory= arrayListOf<String>()
                 var deletedFood=""
+                var TableWaitdeleted=false
                 for(place in 0..allList.size-2)
                 {
-                    if(allList[place]!=waitFood[nowTable-1-deleteTimes])
+                    if(allList[place]!=waitFood[nowTable-1-deleteTimes]||TableWaitdeleted)
                     {
                         f.appendText(allList[place]+"\n")
                     }
                     else
                     {
                         deletedFood=allList[place]
-                        break
+                        TableWaitdeleted=true
                     }
                 }
                 var delete:Boolean=false
@@ -125,15 +127,20 @@ private fun createAndShowGUI() {
                 //println(WordList)
                 waitList.text=""
                 waitFile.writeText("")
+                var deleted=false
                 for (word in allWait)
                 {
                     try{
                         println(FoodStringList)
                         println("HI"+word+":"+FoodStringList[1])
-                        if(word.split("第[0-9]桌".toRegex())[1]!=FoodStringList[1])
+                        if((word.split("第[0-9]桌".toRegex())[1]!=FoodStringList[1])||deleted)
                         {
                             waitList.text=waitList.text+"${word}\n"
                             waitFile.appendText(word+"\n")
+                        }
+                        else
+                        {
+                            deleted=true
                         }
                     }
                     catch (e:Exception)
@@ -159,8 +166,8 @@ private fun createAndShowGUI() {
                     var writer = PrintWriter(output, true)
                     trg=reader.readLine().toInt()
                     writer.println(false)
-                }
 
+                }
                 writer.println(true)
                 /*writer.println("test")
                 writer.println(newHistory.size-1)
