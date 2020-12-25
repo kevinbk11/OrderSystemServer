@@ -1,4 +1,3 @@
-
 import java.awt.*
 import java.io.BufferedReader
 import java.io.File
@@ -151,22 +150,22 @@ private fun createAndShowGUI() {
                 println("HIHI")
                 var ThisClient=arrive!!.accept()
                 println("CONNECT!!")
-                val input = ThisClient!!.getInputStream()
-                val reader = BufferedReader(InputStreamReader(input))
-                val output = ThisClient.getOutputStream()
+                var input = ThisClient!!.getInputStream()
+                var reader = BufferedReader(InputStreamReader(input))
+                var output = ThisClient.getOutputStream()
                 var writer = PrintWriter(output, true)
                 var trg=reader.readLine().toInt()
-                print(trg)
+                println("${trg},${tableNumber}")
                 while(trg!=tableNumber)
                 {
-                    ThisClient=arrive!!.accept()
-                    val input = ThisClient!!.getInputStream()
-                    val reader = BufferedReader(InputStreamReader(input))
-                    val output = ThisClient.getOutputStream()
-                    var writer = PrintWriter(output, true)
-                    trg=reader.readLine().toInt()
                     writer.println(false)
-
+                    ThisClient=arrive!!.accept()
+                    input = ThisClient!!.getInputStream()
+                    reader = BufferedReader(InputStreamReader(input))
+                    output = ThisClient.getOutputStream()
+                    writer = PrintWriter(output, true)
+                    trg=reader.readLine().toInt()
+                    println(trg)
                 }
                 writer.println(true)
                 /*writer.println("test")
@@ -360,16 +359,23 @@ private fun createAndShowGUI() {
                         val F=File(tableNumber.toString()+".txt")
                         F.writeText("")
                         var C=TotalServer.accept()
-                        val i=C.getInputStream()
-                        val o = C.getOutputStream()
-                        val r=BufferedReader(InputStreamReader(i))
-                        val w = PrintWriter(o,true)
-                        println(thisTable)
-                        w.println(thisTable-1)
-                        while(r.readLine().toBoolean())
+                        var i=C.getInputStream()
+                        var o = C.getOutputStream()
+                        var r=BufferedReader(InputStreamReader(i))
+                        var w = PrintWriter(o,true)
+                        var targetNumber=r.readLine()
+                        while(targetNumber.toInt()!=thisTable-1)
                         {
+                            w.println(false)
                             w.println(thisTable-1)
+                            C=TotalServer.accept()
+                            i=C.getInputStream()
+                            o = C.getOutputStream()
+                            r=BufferedReader(InputStreamReader(i))
+                            w = PrintWriter(o,true)
+                            targetNumber=r.readLine()
                         }
+                        w.println(true)
                     }
                 }
                 else if(ReallyClient==1)//送餐
@@ -408,7 +414,7 @@ private fun createAndShowGUI() {
                         }
                         else
                         {
-                             reader.readLine()
+                            reader.readLine()
                         }
                     }
                     var WordOriginList=h.readText()
