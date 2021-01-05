@@ -11,5 +11,8 @@ public class ListForm {
     public JCheckBox CheckBox5;
     public JCheckBox CheckBox3;
     public JCheckBox CheckBox2;
+    public JButton End_TestBtn;
+    public JButton button1;
+    public JLabel total;
 
 }

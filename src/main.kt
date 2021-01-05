@@ -20,7 +20,7 @@ class CheckFrame(title: String) : JFrame() {
         setTitle(title)
 
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        setSize(400, 700)
+        setSize(250, 500)
         setResizable(false)
         setLocationRelativeTo(null)
     }
@@ -37,7 +37,7 @@ class HistoryFrame(title: String) : JFrame() {
         setTitle(title)
 
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        setSize(1920-400, 700)
+        setSize(1120, 500)
         setResizable(false)
         setLocationRelativeTo(null)
     }
@@ -45,6 +45,7 @@ class HistoryFrame(title: String) : JFrame() {
 
 private fun createAndShowGUI() {
     var Cost=arrayOf(0,0,0,0,0,0,0,0)
+    var AllTotal = 0
     val ListFrame=JFrame("待出餐清單")
     val ListForm=ListForm()
     var waitList=ListForm.FoodList
@@ -185,8 +186,25 @@ private fun createAndShowGUI() {
     ListFrame.contentPane=ListForm.panel1
     ListFrame.isVisible=true
     ListFrame.isResizable=false
-    ListFrame.setSize(800,750)
+    ListFrame.setSize(300,500)
+    ListFrame.setLocation(0,0);
+
+    ListForm.End_TestBtn.addActionListener{
+        for (number in 1..8)
+        {
+           var file1=File("${number}.txt")
+           var file2=File("history${number}.txt")
+            file1.writeText("")
+            file2.writeText("")
+        }
+        var f=File("wait.txt")
+        f.writeText("")
+
+    }
+
     val frame = CheckFrame("結帳和退桌")
+    frame.setSize(600,200)
+    frame.setLocation(350,500);
     var btm1=JButton("第一桌")
     var btm2=JButton("第二桌")
     var btm3=JButton("第三桌")
@@ -196,7 +214,7 @@ private fun createAndShowGUI() {
     var btm7=JButton("第七桌")
     var btm8=JButton("第八桌")
     var buttomList=arrayOf(btm1,btm2,btm3,btm4,btm5,btm6,btm7,btm8)
-    val gy = GridLayout(0 ,2,5,5)
+    val gy = GridLayout(2 ,0,5,5)
     val f=Font("hi",Font.PLAIN,16)
     for (btm in buttomList)
     {
@@ -207,6 +225,7 @@ private fun createAndShowGUI() {
     frame.isVisible = true
 
     val frame2 = HistoryFrame("歷史紀錄")
+    frame2.setLocation(250,0);
     var L1=JTextArea()
     var L2=JTextArea()
     var L3=JTextArea()
@@ -225,8 +244,8 @@ private fun createAndShowGUI() {
     var btm28=JButton("第八桌")
     var LabelList=arrayOf(L1,L2,L3,L4,L5,L6,L7,L8)
     var buttomList2=arrayOf(btm21,btm22,btm23,btm24,btm25,btm26,btm27,btm28)
-    val gy2 = GridLayout(2,  8,0,-1)
-    val f2=Font("hi2",Font.PLAIN,16)
+    val gy2 = GridLayout(1,  8,0,-1)
+    val f2=Font("hi2",Font.PLAIN,12)
     for (lab in LabelList)
     {
         lab.setFont(f2)
@@ -355,6 +374,8 @@ private fun createAndShowGUI() {
                     buttomList[thisTable-2].addActionListener {
                         println("正在為${tableNumber}桌的客人結帳,一共是${Cost[tableNumber-1]}元")
                         LabelList[tableNumber-1].text=""
+                        AllTotal+=Cost[tableNumber-1]
+                        ListForm.total.text=AllTotal.toString()
                         Cost[tableNumber-1]=0
                         val F=File(tableNumber.toString()+".txt")
                         F.writeText("")
