@@ -189,7 +189,7 @@ private fun createAndShowGUI() {
     ListFrame.setSize(300,500)
     ListFrame.setLocation(0,0);
 
-    ListForm.End_TestBtn.addActionListener{
+    /*ListForm.End_TestBtn.addActionListener{
         for (number in 1..8)
         {
            var file1=File("${number}.txt")
@@ -200,7 +200,7 @@ private fun createAndShowGUI() {
         var f=File("wait.txt")
         f.writeText("")
 
-    }
+    }*/
 
     val frame = CheckFrame("結帳和退桌")
     frame.setSize(600,200)
@@ -375,7 +375,7 @@ private fun createAndShowGUI() {
                         println("正在為${tableNumber}桌的客人結帳,一共是${Cost[tableNumber-1]}元")
                         LabelList[tableNumber-1].text=""
                         AllTotal+=Cost[tableNumber-1]
-                        ListForm.total.text=AllTotal.toString()
+                        //ListForm.total.text=AllTotal.toString()
                         Cost[tableNumber-1]=0
                         val F=File(tableNumber.toString()+".txt")
                         F.writeText("")
